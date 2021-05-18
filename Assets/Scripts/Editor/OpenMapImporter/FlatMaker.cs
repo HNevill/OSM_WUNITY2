@@ -15,7 +15,7 @@ internal sealed class FlatMaker : BaseInfrastructureMaker
     {
         get
         {
-            return map.ways.FindAll((w) => { return w.IsBoundary && w.NodeIDs.Count > 1;}).Count;
+            return map.ways.FindAll((w) => { return w.structureType == OsmWay.OSMStructureType.Boundary; ; }).Count;
         }
     }
 
@@ -29,12 +29,12 @@ internal sealed class FlatMaker : BaseInfrastructureMaker
         int count = 0;
 
         // Iterate through all the boundarys in the 'ways' list
-        foreach (var way in map.ways.FindAll((w) => { return w.IsBoundary && w.NodeIDs.Count  > 1; }))
+        foreach (var way in map.ways.FindAll((w) => { return w.structureType == OsmWay.OSMStructureType.Boundary; }))
         { 
             // Create the object
            
 
-            CreateObject(way, way._material, way.Name, way.IsWalk); 
+            CreateObject(way, way._material, way.Name, way.type); 
 
             count++;
             yield return count;

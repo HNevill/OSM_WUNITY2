@@ -16,7 +16,7 @@ internal sealed class WayMaker : BaseInfrastructureMaker
 
     public override int NodeCount
     {
-        get { return map.ways.FindAll((w) => { return w.IsWay; }).Count; }
+        get { return map.ways.FindAll((w) => { return w.structureType == OsmWay.OSMStructureType.Way;   }).Count; }
     }
 
     public WayMaker(MapReader mapReader)
@@ -31,9 +31,9 @@ internal sealed class WayMaker : BaseInfrastructureMaker
         int count = 0;
 
         // Iterate through the roads and build each one
-        foreach (var way in map.ways.FindAll((w) => { return w.IsWay; }))
+        foreach (var way in map.ways.FindAll((w) => { return w.structureType == OsmWay.OSMStructureType.Way; }))
         {
-            CreateObject(way, way._material, way.Name, way.IsWay); 
+            CreateObject(way, way._material, way.Name, way.type);
             yield return count;
         }
     }

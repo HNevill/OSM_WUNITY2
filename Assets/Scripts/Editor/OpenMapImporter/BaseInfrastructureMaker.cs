@@ -85,7 +85,7 @@ internal abstract class BaseInfrastructureMaker
     /// <param name="way">OsmWay instance</param>
     /// <param name="mat">Material to apply to the instance</param>
     /// <param name="objectName">The name of the object (building name, road etc.)</param>
-    protected void CreateObject(OsmWay way, Material mat, string objectName, bool IsWalk )
+    protected void CreateObject(OsmWay way, Material mat, string objectName,  OsmWay.OSMType Type)
     {
         // Make sure we have some name to display
         objectName = string.IsNullOrEmpty(objectName) ? "OsmWay" : objectName;
@@ -118,17 +118,8 @@ internal abstract class BaseInfrastructureMaker
         mf.sharedMesh.triangles = indices.ToArray();
         mf.sharedMesh.uv = uvs.ToArray();
 
+        go.transform.SetParent(ImportMapWrapper.GetParentForOSMType(Type));
 
-
-        if (IsWalk == true)
-            {
-            go.transform.SetParent(walkable);
-                       
-        }
-        else
-        {
-            go.transform.SetParent(obstacle);
-             }
     }
 
 

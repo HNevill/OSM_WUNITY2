@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+using System.Collections.Generic;
 
 /*
     Copyright (c) 2018 Sloan Kelly
@@ -32,8 +33,52 @@ internal sealed class ImportMapWrapper
     public static Transform _walkable;
 
     
-    public GameObject Walkable = CreateParent("Walkable");
+   // public GameObject Walkable = CreateParent("Walkable");
 
+    //private static Transform _walkable;
+    //private static Transform Walkable
+    //{
+    //    get
+    //    {
+    //        if (_walkable == null)
+    //        {
+    //            _walkable = CreateParent("Walkable");
+    //        }
+    //        return _walkable;
+    //    }
+    //}
+    //private static Transform _notWalkable;
+    //private static Transform NotWalkable
+    //{
+    //    get
+    //    {
+    //        if (_notWalkable == null)
+    //        {
+    //            _notWalkable = CreateParent("NotWalkable");
+    //        }
+    //        return _notWalkable;
+    //    }
+    //}
+
+    public static Dictionary<OsmWay.OSMType, Transform> TypeParents;
+
+    public static Transform GetParentForOSMType(OsmWay.OSMType Type)
+    {
+        if (TypeParents == null) TypeParents = new Dictionary<OsmWay.OSMType, Transform>();
+
+        //checks if it has key type
+        if (TypeParents.ContainsKey(Type))
+        {
+            return TypeParents[Type];
+        }
+        {
+            var parent = CreateParent(Type.ToString());
+            TypeParents.Add(Type, parent);
+
+            return parent;
+        }
+        
+    }
 
     public ImportMapWrapper(ImportMapDataEditorWindow window, string mapFile)
                             
@@ -54,20 +99,17 @@ internal sealed class ImportMapWrapper
         //Transform Residential = CreateParent("Residential");
         //Transform Pedestrian = CreateParent("Pedestrian");
 
-
-        var buildingMaker = new BuildingMaker(mapReader);
         var roadMaker = new WayMaker(mapReader);
+        var buildingMaker = new BuildingMaker(mapReader); 
         var FlatMaker = new FlatMaker(mapReader);
 
 
-
-        Process(buildingMaker, "Importing buildings");
         Process(roadMaker, "Importing roads");
+        Process(buildingMaker, "Importing buildings");
         Process(FlatMaker, "Importing Flat things");
 
-   
         
-        Combine.CombineMeshes(Walkable);
+       // Combine.CombineMeshes(Walkable);
 
     }
 
@@ -84,17 +126,18 @@ internal sealed class ImportMapWrapper
         _window.UpdateProgress(0, string.Empty, true);
     }
 
+    
 
 
-    public static GameObject CreateParent(string name)
+    public static Transform CreateParent(string name)
     {
 
 
-        GameObject go = new GameObject("name");
+        GameObject go = new GameObject(name);
         MeshFilter mf = go.AddComponent<MeshFilter>();
         MeshRenderer mr = go.AddComponent<MeshRenderer>();
 
-        return go;
+        return go.transform;
     }
 
 

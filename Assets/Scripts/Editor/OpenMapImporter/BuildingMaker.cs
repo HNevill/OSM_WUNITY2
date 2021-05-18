@@ -33,7 +33,7 @@ internal sealed class BuildingMaker : BaseInfrastructureMaker
        {
             return map.ways.FindAll((w) =>
                                     {
-                                        return w.IsBuilding && w.NodeIDs.Count > 1;
+                                        return w.structureType == OsmWay.OSMStructureType.Building; ;
                                     }).Count;
         }
     }
@@ -48,10 +48,10 @@ internal sealed class BuildingMaker : BaseInfrastructureMaker
         int count = 0;
 
         // Iterate through all the buildings in the 'ways' list
-        foreach (var way in map.ways.FindAll((w) => { return w.IsBuilding && w.NodeIDs.Count > 1; }))
+        foreach (var way in map.ways.FindAll((w) => { return w.structureType == OsmWay.OSMStructureType.Building; }))
         {
             // Create the object
-            CreateObject(way, way._material, "Building" ,way.IsWalk); //
+            CreateObject(way, way._material, "Building" ,way.type); //
 
             count++;
             yield return count;

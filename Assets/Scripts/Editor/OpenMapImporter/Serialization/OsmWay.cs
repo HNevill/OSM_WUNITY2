@@ -34,30 +34,13 @@ class OsmWay : BaseOsm
     /// </summary>
     public ulong ID { get; private set; }
 
-    /// <summary>
-    /// True if visible.
-    /// </summary>
-    public bool Visible { get; private set; }
 
     /// <summary>
     /// List of node IDs.
     /// </summary>
     public List<ulong> NodeIDs { get; private set; }
 
-    /// <summary>
-    /// True if the way is a boundary.
-    /// </summary>
-    public bool IsBoundary { get; private set; }
 
-    /// <summary>
-    /// True if the way is a boundary.
-    /// </summary>
-    public bool IsWay { get; private set; }
-
-    /// <summary>
-    /// True if the way is a building.
-    /// </summary>
-    public bool IsBuilding { get; private set; }
 
     /// <summary>
     /// Height of the structure.
@@ -69,16 +52,33 @@ class OsmWay : BaseOsm
     /// </summary>
     public string Name { get; private set; }
 
-    /// <summary>
-    /// The name of the object.
-    /// </summary>
-    public string Parent { get; private set; }
 
     /// <summary>
     /// The number of lanes on the road. Default is 1 for contra-flow
     /// </summary>
     public int Lanes { get; private set; }
     public bool IsWalk { get; private set; }
+
+    public enum OSMStructureType
+    {
+        node,
+        Way,
+        Boundary,
+        Building
+    }
+    public enum OSMType
+    {
+        unknown,
+        Landuse,
+        Water,
+        Building,
+        Railway,
+        Road,
+        Residential
+
+    }
+
+
     //public Material _material;
 
     public Material _material { get; private set; }
@@ -87,7 +87,8 @@ class OsmWay : BaseOsm
 
 
 
-
+    public OSMType type { get; private set; }
+    public OSMStructureType structureType { get; private set; }
 
     /// Constructor.
     /// </summary>
@@ -101,7 +102,6 @@ class OsmWay : BaseOsm
         Lanes = 1;      // Number of lanes either side of the divide 
         Name = "";
         IsWalk = false;
-        IsWay = false;
         Path = false;
 
 
@@ -121,7 +121,10 @@ class OsmWay : BaseOsm
         //if it is a boundary
         if (NodeIDs.Count > 1)
         {
-            IsBoundary = NodeIDs[0] == NodeIDs[NodeIDs.Count - 1];
+            if (NodeIDs[0] == NodeIDs[NodeIDs.Count - 1])
+            structureType = OSMStructureType.Boundary;
+            else
+            structureType = OSMStructureType.Way;
             //IsWay = NodeIDs[0] != NodeIDs[NodeIDs.Count - 1];
         }
 
@@ -137,7 +140,8 @@ class OsmWay : BaseOsm
 
             if (key == "building")
             {
-                IsBuilding = true; // GetAttribute<string>("v", t.Attributes) == "yes";
+                structureType = OSMStructureType.Building;
+                type = OSMType.Building;
                 IsWalk = false;
                 _material = Resources.Load("Building", typeof(Material)) as Material;
 
@@ -154,19 +158,16 @@ class OsmWay : BaseOsm
 
            // Asseigning
 
-            if (key == "amenity" && value == "school") 
-            {
-                IsWalk = true;
-                _material = Resources.Load("Amenity", typeof(Material)) as Material;
-            }
+            //if (key == "amenity" && value == "school") 
+            //{
+            //    IsWalk = true;
+            //    _material = Resources.Load("Amenity", typeof(Material)) as Material;
+            //}
 
             if (key == "highway")
             {
-                IsWay = true;
                 IsWalk = true;
-
-
-                //Parent = "Raods";
+                type = OSMType.Road;
 
                 if (value == "footway" | value == "bridleway" | value == "path" | value == "track" | value == "pedestrian" | value == "corridor" | value == "sidewalk" | value == "cycleway" | value == "secondary_link" | value == "tertiary_link" | value == "living_street")
                 {
@@ -189,8 +190,8 @@ class OsmWay : BaseOsm
 
             if (key == "landuse")
             {
-                Parent = "Landuse";
-                Name = "Landuse";
+
+                type = OSMType.Landuse;
 
                 if (value == "grass" | value == "farmland" | value == "meadow" | value == "cemetary" | value == "village_green" | value == "allotments" | value == "farmyard" | value == "flowerbed" | value == "orchard")
                 {
@@ -199,6 +200,7 @@ class OsmWay : BaseOsm
                 }
                 if (value == " residential")
                 {
+                    type = OSMType.Landuse;
                     _material = Resources.Load("Residential", typeof(Material)) as Material;
 
                 }
@@ -213,7 +215,8 @@ class OsmWay : BaseOsm
             }
             if (key == "railway")
             {
-                IsWay = true;
+                type = OSMType.Railway;
+     
                 Name = "Railway";
                 IsWalk = false;
 
@@ -222,6 +225,7 @@ class OsmWay : BaseOsm
 
             if (key == "water")
             {
+                type = OSMType.Water;
                 Name = "Water";
                 //Name = value;
                 _material = Resources.Load("Water", typeof(Material)) as Material;
@@ -230,38 +234,32 @@ class OsmWay : BaseOsm
             }
             if (key == "waterway" && (value == "canal" | value == "drain" | value == "ditch" | value == "river" | value == "drain"))
             {
+                type = OSMType.Water;
                 Name = "Water";
                 //Name = value;
                 _material = Resources.Load("Water", typeof(Material)) as Material;
                 IsWalk = false;
-                IsWay = true;
+    
             }
-
-
-
-            //if (value == "sand")
-            //{
-
-            //    _material = Resources.Load("Sand", typeof(Material)) as Material;
-            //    IsWalk = false;
-
-            //}
 
 
             if (key == "leisure" && value == "park")
             {
+                type = OSMType.Landuse;
                 Name = "Park";
                 _material = Resources.Load("Grass", typeof(Material)) as Material;
                 IsWalk = false;
             }
             if (key == "natural" && value == "wood")
             {
+
+                type = OSMType.Landuse;
                 Name = "Wood";
                 _material = Resources.Load("Forest", typeof(Material)) as Material;
                 IsWalk = false;
             }
 
-            //if (_material != null && IsWay == true)
+            //if ( type == OSMType.unknown && IsWay != true)
             //{
             //    Path = true;
             //}
