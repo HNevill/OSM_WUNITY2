@@ -78,6 +78,7 @@ class OsmWay : BaseOsm
 
     }
 
+    MapReader map;
 
     //public Material _material;
 
@@ -114,6 +115,9 @@ class OsmWay : BaseOsm
         foreach (XmlNode n in nds)
         {
             ulong refNo = GetAttribute<ulong>("ref", n.Attributes);
+            //if (map.nodes[refNo].X < map.minx || map.nodes[refNo].X > map.maxx || map.nodes[refNo].Y > map.maxy || map.nodes[refNo].Y < map.miny)
+            //{ }
+
             NodeIDs.Add(refNo);
 
         }
@@ -191,16 +195,15 @@ class OsmWay : BaseOsm
             if (key == "landuse")
             {
 
-                type = OSMType.Landuse;
-
                 if (value == "grass" | value == "farmland" | value == "meadow" | value == "cemetary" | value == "village_green" | value == "allotments" | value == "farmyard" | value == "flowerbed" | value == "orchard")
                 {
+                    type = OSMType.Landuse;
 
                     _material = Resources.Load("Grass", typeof(Material)) as Material;
                 }
-                if (value == " residential")
+                if (value == "residential")
                 {
-                    type = OSMType.Landuse;
+                    type = OSMType.Residential;
                     _material = Resources.Load("Residential", typeof(Material)) as Material;
 
                 }
@@ -208,7 +211,8 @@ class OsmWay : BaseOsm
 
                 if (value == " military" | value == "protected_area" | value == "forest" | value == "vineyard" | value == "allotments")
                 {
-                    _material = Resources.Load("Residential", typeof(Material)) as Material;
+                    _material = Resources.Load("Grass", typeof(Material)) as Material;
+                    type = OSMType.Landuse;
                 }
 
 

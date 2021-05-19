@@ -36,6 +36,11 @@ internal sealed class MapReader
     [HideInInspector]
     public OsmBounds bounds;
 
+    public float minx;
+    public float miny;
+    public float maxx;
+    public float maxy;
+
     /// <summary>
     /// Load the OpenMap data resource file.
     /// </summary>
@@ -55,10 +60,10 @@ internal sealed class MapReader
         GetNodes(doc.SelectNodes("/osm/node"));
         GetWays(doc.SelectNodes("/osm/way"));
 
-        float minx = (float)MercatorProjection.lonToX(bounds.MinLon);
-        float maxx = (float)MercatorProjection.lonToX(bounds.MaxLon);
-        float miny = (float)MercatorProjection.latToY(bounds.MinLat);
-        float maxy = (float)MercatorProjection.latToY(bounds.MaxLat);
+        minx = (float)MercatorProjection.lonToX(bounds.MinLon);
+        maxx = (float)MercatorProjection.lonToX(bounds.MaxLon);
+        miny = (float)MercatorProjection.latToY(bounds.MinLat);
+        maxy = (float)MercatorProjection.latToY(bounds.MaxLat);
     }
 
     void GetWays(XmlNodeList xmlNodeList)

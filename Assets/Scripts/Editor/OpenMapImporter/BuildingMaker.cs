@@ -51,7 +51,7 @@ internal sealed class BuildingMaker : BaseInfrastructureMaker
         foreach (var way in map.ways.FindAll((w) => { return w.structureType == OsmWay.OSMStructureType.Building; }))
         {
             // Create the object
-            CreateObject(way, way._material, "Building" ,way.type); //
+            CreateObject(way, way._material, way.Name ,way.type); //
 
             count++;
             yield return count;

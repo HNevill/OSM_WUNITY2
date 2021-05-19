@@ -36,14 +36,6 @@ internal abstract class BaseInfrastructureMaker
     /// </summary>
     public abstract int NodeCount { get; }
 
-    Transform walkable = ImportMapWrapper._walkable;
-    Transform obstacle = ImportMapWrapper._obstacles;
-
-
-
-    public static List<GameObject> roadgo = new List<GameObject>(); 
-    public static List<CombineInstance> roadinstance = new List<CombineInstance>();
-    public static List<MeshFilter> roadfilter = new List<MeshFilter>();
 
     /// <summary>
     /// Awaken this instance!!!
